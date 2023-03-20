@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  db_codex:
+    container_name: db_codex
+    image: mongo:6.0
+    restart: always
+    ports:
+      - "27017:27017"
