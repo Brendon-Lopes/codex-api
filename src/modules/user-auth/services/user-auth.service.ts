@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { UserLoginDto } from '../dto/user-login.dto'
 import { User } from '../entities/user.entity'
 import { IUserAuthRepository } from '../interfaces/user-auth-repository.interface'
@@ -12,6 +12,10 @@ export class UserAuthService implements IUserAuthService {
     const user = await this.userAuthRepository.findUserByEmail(
       userLoginDto.email,
     )
+
+    if (user == null) {
+      throw new BadRequestException('Email or password is incorrect')
+    }
 
     return user
   }
