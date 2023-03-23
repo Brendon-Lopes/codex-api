@@ -1,9 +1,13 @@
-version: "3.9"
-
+version: '3.8'
 services:
-  db_codex:
-    container_name: db_codex
-    image: mongo:6.0
-    restart: always
+  
+  database:
+    image: 'bitnami/mongodb:6.0'
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=127.0.0.1
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=root
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
     ports:
-      - "27017:27017"
+      - '27017:27017'
