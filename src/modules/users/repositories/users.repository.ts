@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
-import { IUserAuthRepository } from '../interfaces/user-auth-repository.interface'
 import { User } from '@prisma/client'
-import { PrismaService } from '../../../database/prisma/prisma.service'
-import { UserRegisterDto } from 'src/modules/users/dto/user-register.dto'
+import { PrismaService } from 'src/database/prisma/prisma.service'
+import { UserRegisterDto } from '../dto/user-register.dto'
+import { IUsersRepository } from '../interfaces/users-repository.interface'
 
 @Injectable()
-export class UserAuthRepository implements IUserAuthRepository {
+export class UsersRepository implements IUsersRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findUserByEmail(email: string): Promise<User> {

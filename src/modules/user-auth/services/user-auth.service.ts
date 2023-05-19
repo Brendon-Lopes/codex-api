@@ -1,35 +1,52 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { UserLoginDto } from '../dto/user-login.dto'
-import { IUserAuthRepository } from '../interfaces/user-auth-repository.interface'
 import { IUserAuthService } from '../interfaces/user-auth-service.interface'
 import { User } from '@prisma/client'
-import { UserRegisterDto } from '../dto/user-register.dto'
+import { IUsersService } from 'src/modules/users/interfaces/users-service.interface'
+import { UserRegisterDto } from 'src/modules/users/dto/user-register.dto'
+import { PasswordHandler } from 'src/utils/password-handler'
 
 @Injectable()
 export class UserAuthService implements IUserAuthService {
-  constructor(private readonly userAuthRepository: IUserAuthRepository) {}
+  constructor(private readonly usersService: IUsersService) {}
 
-  async login(userLoginDto: UserLoginDto): Promise<User> {
-    const user = await this.userAuthRepository.findUserByEmail(
-      userLoginDto.email,
-    )
+  async login(userLoginDto: UserLoginDto): Promise<Omit<User, 'password'>> {
+    const user = await this.usersService.findUserByEmail(userLoginDto.email)
 
     if (user == null) {
       throw new BadRequestException('Email or password is incorrect')
     }
 
-    return user
-  }
+    const { password, ...userWithoutPassword } = user
 
-  async register(userRegisterDto: UserRegisterDto): Promise<User> {
-    const user = await this.userAuthRepository.findUserByEmail(
-      userRegisterDto.email,
+    const isPasswordValid = await PasswordHandler.compare(
+      userLoginDto.password,
+      password,
     )
 
-    if (user != null) {
-      throw new BadRequestException('Email already registered')
+    if (!isPasswordValid) {
+      throw new BadRequestException('Email or password is incorrect')
     }
 
-    return this.userAuthRepository.createUser(userRegisterDto)
+    return userWithoutPassword
+  }
+
+  async register(
+    userRegisterDto: UserRegisterDto,
+  ): Promise<Omit<User, 'password'>> {
+    const hashedPassword = await PasswordHandler.hash(userRegisterDto.password)
+
+    const userRegisterDtoWithHashedPassword = {
+      ...userRegisterDto,
+      password: hashedPassword,
+    }
+
+    const user = await this.usersService.register(
+      userRegisterDtoWithHashedPassword,
+    )
+
+    delete user.password
+
+    return user
   }
 }

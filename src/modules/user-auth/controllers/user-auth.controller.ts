@@ -2,7 +2,7 @@ import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common'
 import { UserLoginDto } from '../dto/user-login.dto'
 import { IUserAuthService } from '../interfaces/user-auth-service.interface'
 import { Response } from 'express'
-import { UserRegisterDto } from '../dto/user-register.dto'
+import { UserRegisterDto } from 'src/modules/users/dto/user-register.dto'
 
 @Controller('user-auth')
 export class UserAuthController {
