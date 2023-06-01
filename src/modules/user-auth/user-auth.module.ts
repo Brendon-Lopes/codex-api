@@ -9,6 +9,7 @@ import { UserAuthRepository } from './repositories/user-auth-repository'
 import { UserAuthService } from './services/user-auth.service'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
+import { UserJwtService } from './services/user-jwt-service'
 
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -33,6 +34,7 @@ const JWT_SECRET = process.env.JWT_SECRET
       provide: IUserAuthRepository,
       useClass: UserAuthRepository,
     },
+    UserJwtService,
     PrismaService,
   ],
 })
