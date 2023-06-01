@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { Module } from '@nestjs/common'
 import { PrismaService } from 'src/database/prisma/prisma.service'
 import { UsersModule } from '../users/users.module'
@@ -9,11 +10,13 @@ import { UserAuthService } from './services/user-auth.service'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 
+const JWT_SECRET = process.env.JWT_SECRET
+
 @Module({
   imports: [
     UsersModule,
     JwtModule.register({
-      secret: 'secret',
+      secret: JWT_SECRET,
       signOptions: { expiresIn: '1d', algorithm: 'HS512' },
     }),
     PassportModule.register({
