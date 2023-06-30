@@ -7,6 +7,7 @@ import { IUsersService } from '../interfaces/users-service.interface'
 @Injectable()
 export class UsersService implements IUsersService {
   constructor(private readonly usersRepository: IUsersRepository) {}
+
   async findUserByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findUserByEmail(email)
 
