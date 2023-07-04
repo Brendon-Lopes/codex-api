@@ -1,3 +1,3 @@
-import { ILoginResponse } from "./login-response.interface";
+import { ILoginResponse } from './login-response.interface'
 
-export interface IRegisterResponse extends ILoginResponse {}
+export type IRegisterResponse = ILoginResponse
