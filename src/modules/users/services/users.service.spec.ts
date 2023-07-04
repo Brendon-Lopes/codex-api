@@ -5,7 +5,7 @@ import { IUsersService } from '../interfaces/users-service.interface'
 import { UsersRepository } from '../repositories/users.repository'
 import { UsersService } from './users.service'
 import { User } from '@prisma/client'
-import { BadRequestException } from '@nestjs/common'
+import { BadRequestException, ConflictException } from '@nestjs/common'
 
 describe('UsersService', () => {
   let usersService: IUsersService
@@ -28,6 +28,10 @@ describe('UsersService', () => {
 
     usersService = module.get<IUsersService>(IUsersService)
     usersRepository = module.get<IUsersRepository>(IUsersRepository)
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   it('should be defined', () => {
@@ -55,5 +59,43 @@ describe('UsersService', () => {
     expect(usersService.findUserByEmail('john@mail.com')).rejects.toThrowError(
       BadRequestException,
     )
+  })
+
+  describe('register', () => {
+    it('should return the created user', async () => {
+      const user: User = {
+        id: '1',
+        name: 'John Doe',
+        email: 'john@mail.com',
+        password: '123456',
+      }
+
+      jest.spyOn(usersRepository, 'findUserByEmail').mockResolvedValue(null)
+      jest.spyOn(usersRepository, 'createUser').mockResolvedValue(user)
+
+      const result = await usersService.register({
+        name: 'John Doe',
+        email: 'john@mail.com',
+        password: '123456',
+      })
+
+      expect(result).toBe(user)
+    })
+
+    it('should throw an error if the user already exists', async () => {
+      const user: User = {
+        id: '1',
+        name: 'John Doe',
+        email: 'john@mail.com',
+        password: '123456',
+      }
+
+      jest.spyOn(usersRepository, 'findUserByEmail').mockResolvedValue(user)
+      jest.spyOn(usersRepository, 'createUser').mockImplementation()
+
+      expect(usersService.register(user)).rejects.toThrowError(
+        ConflictException,
+      )
+    })
   })
 })
