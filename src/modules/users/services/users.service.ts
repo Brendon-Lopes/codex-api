@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common'
 import { User } from '@prisma/client'
 import { UserRegisterDto } from '../dto/user-register.dto'
 import { IUsersRepository } from '../interfaces/users-repository.interface'
@@ -24,7 +28,7 @@ export class UsersService implements IUsersService {
     )
 
     if (user != null) {
-      throw new BadRequestException('Email already registered')
+      throw new ConflictException('Email already registered')
     }
 
     return this.usersRepository.createUser(userRegisterDto)
