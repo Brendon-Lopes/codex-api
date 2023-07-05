@@ -93,7 +93,7 @@ describe('UsersService', () => {
       jest.spyOn(usersRepository, 'findUserByEmail').mockResolvedValue(user)
       jest.spyOn(usersRepository, 'createUser').mockImplementation()
 
-      expect(usersService.register(user)).rejects.toThrowError(
+      await expect(usersService.register(user)).rejects.toThrowError(
         ConflictException,
       )
     })
