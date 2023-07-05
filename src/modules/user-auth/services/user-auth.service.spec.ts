@@ -12,6 +12,7 @@ describe('UserAuthService', () => {
   let service: IUserAuthService
   let usersService: IUsersService
   let userJwtService: UserJwtService
+  let user: User
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,6 +25,7 @@ describe('UserAuthService', () => {
           provide: IUsersService,
           useClass: jest.fn(() => ({
             findUserByEmail: jest.fn(),
+            register: jest.fn(),
           })),
         },
         {
@@ -39,6 +41,13 @@ describe('UserAuthService', () => {
     service = module.get<IUserAuthService>(IUserAuthService)
     usersService = module.get<IUsersService>(IUsersService)
     userJwtService = module.get<UserJwtService>(UserJwtService)
+
+    user = {
+      id: '1',
+      email: 'john@mail.com',
+      password: 'hashedPassword',
+      name: 'John',
+    }
   })
 
   afterEach(() => {
@@ -51,13 +60,6 @@ describe('UserAuthService', () => {
 
   describe('login', () => {
     it('should return the login response', async () => {
-      const user: User = {
-        id: '1',
-        email: 'john@mail.com',
-        password: 'hashedPassword',
-        name: 'John',
-      }
-
       jest.spyOn(usersService, 'findUserByEmail').mockResolvedValueOnce(user)
       jest.spyOn(PasswordHandler, 'compare').mockResolvedValueOnce(true)
       jest.spyOn(userJwtService, 'signAsync').mockResolvedValueOnce('token')
@@ -87,13 +89,6 @@ describe('UserAuthService', () => {
     })
 
     it('should throw an error if the password is incorrect', async () => {
-      const user: User = {
-        id: '1',
-        email: 'john@mail.com',
-        password: 'hashedPassword',
-        name: 'John',
-      }
-
       jest.spyOn(usersService, 'findUserByEmail').mockResolvedValueOnce(user)
       jest.spyOn(PasswordHandler, 'compare').mockResolvedValueOnce(false)
       jest.spyOn(userJwtService, 'signAsync').mockResolvedValueOnce(null)
@@ -108,6 +103,37 @@ describe('UserAuthService', () => {
       expect(usersService.findUserByEmail).toHaveBeenCalledTimes(1)
       expect(PasswordHandler.compare).toHaveBeenCalledTimes(1)
       expect(userJwtService.signAsync).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  describe('register', () => {
+    it('should return the user and the access token', async () => {
+      jest
+        .spyOn(PasswordHandler, 'hash')
+        .mockResolvedValueOnce('hashedPassword')
+
+      jest
+        .spyOn(usersService, 'register')
+        .mockResolvedValueOnce({ ...user, password: 'hashedPassword' })
+
+      jest.spyOn(userJwtService, 'signAsync').mockResolvedValueOnce('token')
+
+      const result = await service.register({
+        email: user.email,
+        password: user.password,
+        name: user.name,
+      })
+
+      delete user.password
+
+      expect(result).toEqual({
+        ...user,
+        accessToken: 'token',
+      })
+
+      expect(PasswordHandler.hash).toHaveBeenCalledTimes(1)
+      expect(usersService.register).toHaveBeenCalledTimes(1)
+      expect(userJwtService.signAsync).toHaveBeenCalledTimes(1)
     })
   })
 })
