@@ -3,7 +3,9 @@ import { UserLoginDto } from '../dto/user-login.dto'
 import { IUserAuthService } from '../interfaces/user-auth-service.interface'
 import { Response } from 'express'
 import { UserRegisterDto } from 'src/modules/users/dto/user-register.dto'
+import { Public } from '../decorators/public.decorator'
 
+@Public()
 @Controller('user-auth')
 export class UserAuthController {
   constructor(private readonly userAuthService: IUserAuthService) {}
