@@ -13,4 +13,8 @@ export class UserJwtService {
       sub: user.id,
     })
   }
+
+  async verifyAsync(token: string): Promise<User> {
+    return this.jwtService.verifyAsync<User>(token)
+  }
 }
