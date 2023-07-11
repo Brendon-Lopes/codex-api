@@ -4,7 +4,9 @@ import { IUserAuthService } from '../interfaces/user-auth-service.interface'
 import { Response } from 'express'
 import { UserRegisterDto } from 'src/modules/users/dto/user-register.dto'
 import { Public } from '../decorators/public.decorator'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('User Auth')
 @Public()
 @Controller('user-auth')
 export class UserAuthController {
