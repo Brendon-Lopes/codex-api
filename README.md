@@ -39,7 +39,7 @@ npm run start:dev
 ```
 
 6. Acesse pelo link:
-   [http://localhost:3000/](http://localhost:3000/)
+   [http://localhost:3000/api](http://localhost:3000/api)
 
 ## Como rodar os testes unitários
 
